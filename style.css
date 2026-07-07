@@ -21,7 +21,7 @@ body{
     overflow: hidden; /* Hides text that doesn't fit */
     white-space: nowrap; /* Stops text from dropping to the next line */
     box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-    width: 30px;
+    width: 45px;
     transition: width 0.3s ease;
     display: grid;
     grid-template-rows: repeat(1, 80px) repeat(5 , 40px) repeat(1 , 100px) repeat(2 ,40px);
@@ -39,7 +39,8 @@ body{
     justify-items: left;
     margin-top: 0;
     margin-bottom: 20px;
-    font-size: 1.5rem;
+    height: 40px;
+    width: 40px;
 
 }
 
@@ -118,11 +119,12 @@ body{
 .main-mainbar{
   
     display: grid;
-   grid-template-rows: 99% 1fr;
 }
 .main{
     display: grid;
     grid-template-columns: 75% 1fr;
+    justify-items: center;
+    align-items: center;
 }
 
 
@@ -142,4 +144,24 @@ button{
     
 button:hover {
      background-color: rgba(103, 188, 230, 0.8);
+     }
+
+     .gameboard {
+            background-color: aqua;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            width: max-content; 
+
+     }
+
+     .gametile{
+        border: 1px solid black;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+        font-size: 100px;
+     }
+
+     .hidden{
+        display: none;
      }
