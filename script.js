@@ -22,16 +22,40 @@ const sidebar = (() => {
 
 })();
 const startgame= (()=>{
-    const playboard = document.getElementById('boardgame');
     const startbtn = document.getElementById('start');
     const gamestart = document.getElementById('playgame');
+    
+
    
-    startbtn.addEventListener('click',() => {
+    startbtn.addEventListener('click',(event) => {
         event.preventDefault();
-        createdgrid(3);
+
+
+        const whowin = document.getElementById('winning'); 
+        const player1input= document.getElementById('player1').value.trim();
+        const player2input = document.getElementById('player2').value.trim();
+
+    // 3. The Bouncer: Check if either name is strictly blank
+    if (player1input === '' || player2input=== '') {
+        // Warn the user
+        alert("Please enter a name for both Player 1 and Player 2!");
+        
+        // This 'return' is the magic word. It stops the function immediately.
+        // Nothing below this line will run, meaning the game won't start.
+        return;
+        }
+        createdgrid(3 , player1input , player2input);
         startbtn.style.display = 'none';
+        whowin.innerText='';
         gamestart.style.display='none';
     });
+
+  function createplayer(name , marker){
+        let move=[];
+        return { name , marker ,move 
+        };
+    }
+
 
     function checkwin(player){
         const wincondition = [
@@ -40,7 +64,7 @@ const startgame= (()=>{
         [0, 4, 8], [2, 4, 6],
         ];
 
-        for(i=0 ; i<wincondition.length ; i++){
+        for(let i=0 ; i<wincondition.length ; i++){
         const condition = wincondition[i];
 
         let index1= condition[0];
@@ -56,22 +80,15 @@ const startgame= (()=>{
     } return false;
     }
 
-    function createdgrid(size){
-    playboard.innerHTML='';
-        let user1 = createplayer('alice','X');
-        let user2 = createplayer('balmond' , 'O');
+    function createdgrid(size , player1 , player2){
+
+        const playboard = document.getElementById('boardgame');
+        const user1 = createplayer(player1 , 'X')
+        const user2 = createplayer(player2 , 'O');
         let currentPlayer = user1;
 
-        function resetgame(){
-        event.preventDefault();
-                    user1.player.length =0; 
-                    user2.player.length=0;
-                    console.log(user1.player , user2.player);
-                    playboard.innerText='';
-                    startbtn.style.display = 'inline-block';
-                    gamestart.style.display = 'inline-block';
-                    currentPlayer=user1;
-    }
+        playboard.innerHTML='';
+ 
 
         const totalSquares = size * size; 
         for (let i = 0; i < totalSquares; i++) {
@@ -85,35 +102,37 @@ const startgame= (()=>{
                 return;
                 e.target.textContent = currentPlayer.marker;
                 const cellIndex = parseInt(e.target.getAttribute('data-index'));
-                if (currentPlayer === user1 ){
-                user1.player.push(cellIndex);
-                }else {
-                    user2.player.push(cellIndex);
-                }
-                console.log(`Cell ${cellIndex} was clicked!`);
-                console.log(user1.player);
-                console.log(user2.player);
-                currentPlayer = currentPlayer === user1 ? user2 : user1;
+                currentPlayer.move.push(cellIndex);
+                console.log(user1.move);
+                console.log(user2.move);
+               
 
-                if(checkwin(user1.player)){
-                    console.log('player1 win');
-                    event.preventDefault();
-                    resetgame();
-                }  else if(checkwin(user2.player)){
-                    console.log('player2 win');
-                    event.preventDefault();
-                    resetgame();
-                }
+                if(checkwin(currentPlayer.move)){
+                    const whowin = document.getElementById('winning'); 
+                    const winningtext = document.createElement('p');
+                    winningtext.textContent = currentPlayer.name +' win';
+                    whowin.appendChild(winningtext);
+                    
+                    console.log(currentPlayer.name + ' win');
+                    console.log(user1.move) ;
+                    console.log(user2.move) ;
+                    resetgame(playboard);
+                    return;
+                }  
+                 currentPlayer = currentPlayer === user1 ? user2 : user1;
             })
             playboard.appendChild(square);
         }
     }  
 
-    function createplayer(name , marker){
-        let player=[];
-        return { name , marker ,player 
-        };
+  
+       function resetgame( playboard , whowin ){
+                    playboard.innerText='';
+                    startbtn.style.display = 'inline-block';
+                    gamestart.style.display = 'inline-block';
+                  
     }
-   
+
+
 
 })();
