@@ -24,16 +24,23 @@ const sidebar = (() => {
 const startgame= (()=>{
     const playboard = document.getElementById('boardgame');
     const startbtn = document.getElementById('start');
-    let player1=[];
-    let player2=[];
-    let currentPlayer = 'X' ;
-    const wincondition = [
-    [0, 1, 2], [3, 4, 5], [6, 7, 8],
-    [0, 3, 6], [1, 4, 7], [2, 5, 8],
-    [0, 4, 8], [2, 4, 6],
-];
-function checkwin(player){
-    for(i=0 ; i<wincondition.length ; i++){
+    const gamestart = document.getElementById('playgame');
+   
+    startbtn.addEventListener('click',() => {
+        event.preventDefault();
+        createdgrid(3);
+        startbtn.style.display = 'none';
+        gamestart.style.display='none';
+    });
+
+    function checkwin(player){
+        const wincondition = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6],
+        ];
+
+        for(i=0 ; i<wincondition.length ; i++){
         const condition = wincondition[i];
 
         let index1= condition[0];
@@ -47,15 +54,25 @@ function checkwin(player){
         };
 
     } return false;
-}
+    }
 
-startbtn.addEventListener('click',() => {
-        createdgrid(3);
-        startbtn.style.display = 'none';
-    });
-    
     function createdgrid(size){
     playboard.innerHTML='';
+        let user1 = createplayer('alice','X');
+        let user2 = createplayer('balmond' , 'O');
+        let currentPlayer = user1;
+
+        function resetgame(){
+        event.preventDefault();
+                    user1.player.length =0; 
+                    user2.player.length=0;
+                    console.log(user1.player , user2.player);
+                    playboard.innerText='';
+                    startbtn.style.display = 'inline-block';
+                    gamestart.style.display = 'inline-block';
+                    currentPlayer=user1;
+    }
+
         const totalSquares = size * size; 
         for (let i = 0; i < totalSquares; i++) {
             const square = document.createElement('div');
@@ -66,31 +83,37 @@ startbtn.addEventListener('click',() => {
             square.addEventListener('click',(e)=>{
                 if(e.target.textContent !== '')
                 return;
-                e.target.textContent = currentPlayer;
+                e.target.textContent = currentPlayer.marker;
                 const cellIndex = parseInt(e.target.getAttribute('data-index'));
-                if (currentPlayer === 'X' ){
-                player1.push(cellIndex);
-                }else{
-                player2.push(cellIndex);
+                if (currentPlayer === user1 ){
+                user1.player.push(cellIndex);
+                }else {
+                    user2.player.push(cellIndex);
                 }
                 console.log(`Cell ${cellIndex} was clicked!`);
-                console.log(player1);
-                console.log(player2);
-                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                console.log(user1.player);
+                console.log(user2.player);
+                currentPlayer = currentPlayer === user1 ? user2 : user1;
 
-                if(checkwin(player1)){
+                if(checkwin(user1.player)){
                     console.log('player1 win');
                     event.preventDefault();
-                    player1.length =0; player2.length=0;
-                    console.log('Arrays reset:',player1 , player2);
-                }  else if(checkwin(player2)){
+                    resetgame();
+                }  else if(checkwin(user2.player)){
                     console.log('player2 win');
                     event.preventDefault();
-                    player1.length =0; player2.length=0;
-                    console.log('Arrays reset:',player1 , player2);
+                    resetgame();
                 }
             })
             playboard.appendChild(square);
         }
     }  
+
+    function createplayer(name , marker){
+        let player=[];
+        return { name , marker ,player 
+        };
+    }
+   
+
 })();
