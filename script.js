@@ -25,12 +25,11 @@ const startgame= (()=>{
     const startbtn = document.getElementById('start');
     const gamestart = document.getElementById('playgame');
     
+    
 
    
     startbtn.addEventListener('click',(event) => {
-        event.preventDefault();
-
-
+        event.preventDefault();      
         const whowin = document.getElementById('winning'); 
         const player1input= document.getElementById('player1').value.trim();
         const player2input = document.getElementById('player2').value.trim();
@@ -44,7 +43,7 @@ const startgame= (()=>{
         // Nothing below this line will run, meaning the game won't start.
         return;
         }
-        createdgrid(3 , player1input , player2input);
+        createdgrid(3 , player1input , player2input );
         startbtn.style.display = 'none';
         whowin.innerText='';
         gamestart.style.display='none';
@@ -80,12 +79,13 @@ const startgame= (()=>{
     } return false;
     }
 
-    function createdgrid(size , player1 , player2){
+    function createdgrid(size , player1 , player2 ){
 
         const playboard = document.getElementById('boardgame');
         const user1 = createplayer(player1 , 'X')
         const user2 = createplayer(player2 , 'O');
         let currentPlayer = user1;
+        let gameover = false;
 
         playboard.innerHTML='';
  
@@ -98,6 +98,7 @@ const startgame= (()=>{
             square.style.height=`100px`;
             square.dataset.index = i;
             square.addEventListener('click',(e)=>{
+                if (gameover) return;
                 if(e.target.textContent !== '')
                 return;
                 e.target.textContent = currentPlayer.marker;
@@ -108,17 +109,22 @@ const startgame= (()=>{
                
 
                 if(checkwin(currentPlayer.move)){
-                    const whowin = document.getElementById('winning'); 
-                    const winningtext = document.createElement('p');
-                    winningtext.textContent = currentPlayer.name +' win';
-                    whowin.appendChild(winningtext);
-                    
+                    gameover = true;
+                    gamestart.style.display='';
+                    ShowEndScreen(currentPlayer.name +' win' ,playboard);
                     console.log(currentPlayer.name + ' win');
                     console.log(user1.move) ;
                     console.log(user2.move) ;
-                    resetgame(playboard);
                     return;
                 }  
+
+                if(user1.move.length + user2.move.length === totalSquares){
+                    gameover = true;
+                    gamestart.style.display='';
+                    console.log('it is tie');
+                    ShowEndScreen('no one win',playboard);
+                    return;
+                }
                  currentPlayer = currentPlayer === user1 ? user2 : user1;
             })
             playboard.appendChild(square);
@@ -126,13 +132,30 @@ const startgame= (()=>{
     }  
 
   
-       function resetgame( playboard , whowin ){
-                    playboard.innerText='';
+       function resetgame( playboard ){
+                    playboard.innerHTML='';
                     startbtn.style.display = 'inline-block';
-                    gamestart.style.display = 'inline-block';
-                  
+                    gamestart.style.display = 'inline-block';       
+                      
     }
-
-
-
+          function ShowEndScreen(massage ,playboard){
+                    const whowin = document.getElementById('winning'); 
+                    const winningtext = document.createElement('p');
+                    const playbtn = document.createElement('button');
+                    const gameform = document.getElementById('game');
+                    whowin.innerHTML='';
+                    playbtn.textContent='play again';
+                    playbtn.addEventListener('click',()=>{
+                        whowin.innerHTML='';
+                        whowin.style.display='';
+                        gameform.style.display='';
+                        resetgame(playboard);
+                    });
+                    winningtext.textContent = massage;
+                    whowin.appendChild(winningtext);
+                    whowin.appendChild(playbtn);
+                    gameform.style.display='none';
+                    
+                    
+        }
 })();
