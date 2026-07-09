@@ -49,14 +49,16 @@ const startgame= (()=>{
         gamestart.style.display='none';
     });
 
-  function createplayer(name , marker){
+    /*function createplayer(name , marker){
         let move=[];
         return { name , marker ,move 
         };
+    }*/
+ function createplayer(name , marker){
+        return { name , marker};
     }
 
-
-    function checkwin(player){
+    function checkwin(board ,marker){
         const wincondition = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -70,11 +72,16 @@ const startgame= (()=>{
         let index2= condition[1];
         let index3= condition[2];
 
-        if (player.includes(index1)&&
+        /*if (player.includes(index1)&&
         player.includes(index2)&&
         player.includes(index3)){
             return true;
-        };
+        };*/
+        if (board[index1] === marker && 
+            board[index2] === marker && 
+            board[index3] === marker) {
+            return true; 
+        }
 
     } return false;
     }
@@ -82,8 +89,9 @@ const startgame= (()=>{
     function createdgrid(size , player1 , player2 ){
 
         const playboard = document.getElementById('boardgame');
-        const user1 = createplayer(player1 , 'X')
+        const user1 = createplayer(player1 , 'X');
         const user2 = createplayer(player2 , 'O');
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
         let currentPlayer = user1;
         let gameover = false;
 
@@ -103,26 +111,27 @@ const startgame= (()=>{
                 return;
                 e.target.textContent = currentPlayer.marker;
                 const cellIndex = parseInt(e.target.getAttribute('data-index'));
-                currentPlayer.move.push(cellIndex);
-                console.log(user1.move);
-                console.log(user2.move);
+                //currentPlayer.move.push(cellIndex);
+                gameBoard[cellIndex] = currentPlayer.marker;
+                console.log(gameBoard);
                
 
-                if(checkwin(currentPlayer.move)){
+                if(checkwin(gameBoard,currentPlayer.marker)){
                     gameover = true;
-                    gamestart.style.display='';
-                    ShowEndScreen(currentPlayer.name +' win' ,playboard);
+                    
+                    ShowEndScreen(currentPlayer.name +' win' ,playboard );
                     console.log(currentPlayer.name + ' win');
-                    console.log(user1.move) ;
-                    console.log(user2.move) ;
+                    console.log(gameBoard) ;
                     return;
                 }  
 
-                if(user1.move.length + user2.move.length === totalSquares){
+                //if(user1.move.length + user2.move.length === totalSquares)
+                if(!gameBoard.includes('')){
                     gameover = true;
-                    gamestart.style.display='';
+                    
                     console.log('it is tie');
-                    ShowEndScreen('no one win',playboard);
+                    console.log(gameBoard);
+                    ShowEndScreen('no one win',playboard );
                     return;
                 }
                  currentPlayer = currentPlayer === user1 ? user2 : user1;
@@ -143,6 +152,7 @@ const startgame= (()=>{
                     const winningtext = document.createElement('p');
                     const playbtn = document.createElement('button');
                     const gameform = document.getElementById('game');
+                    gamestart.style.display='';
                     whowin.innerHTML='';
                     playbtn.textContent='play again';
                     playbtn.addEventListener('click',()=>{
@@ -150,6 +160,7 @@ const startgame= (()=>{
                         whowin.style.display='';
                         gameform.style.display='';
                         resetgame(playboard);
+                
                     });
                     winningtext.textContent = massage;
                     whowin.appendChild(winningtext);
